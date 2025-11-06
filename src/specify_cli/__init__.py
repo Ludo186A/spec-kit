@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
@@ -157,12 +157,12 @@ SCRIPT_TYPE_CHOICES = {"sh": "POSIX Shell (bash/zsh)", "ps": "PowerShell"}
 CLAUDE_LOCAL_PATH = Path.home() / ".claude" / "local" / "claude"
 
 BANNER = """
-███████╗██████╗ ███████╗ ██████╗██╗███████╗██╗   ██╗
-██╔════╝██╔══██╗██╔════╝██╔════╝██║██╔════╝╚██╗ ██╔╝
-███████╗██████╔╝█████╗  ██║     ██║█████╗   ╚████╔╝ 
-╚════██║██╔═══╝ ██╔══╝  ██║     ██║██╔══╝    ╚██╔╝  
-███████║██║     ███████╗╚██████╗██║██║        ██║   
-╚══════╝╚═╝     ╚══════╝ ╚═════╝╚═╝╚═╝        ╚═╝   
+â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ•—   â–ˆâ–ˆâ•—
+â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•”â•â•â•â•â•â•šâ–ˆâ–ˆâ•— â–ˆâ–ˆâ•”â•
+â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ•‘â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—   â•šâ–ˆâ–ˆâ–ˆâ–ˆâ•”â• 
+â•šâ•â•â•â•â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•”â•â•â•â• â–ˆâ–ˆâ•”â•â•â•  â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•”â•â•â•    â•šâ–ˆâ–ˆâ•”â•  
+â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•‘â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â•šâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•‘        â–ˆâ–ˆâ•‘   
+â•šâ•â•â•â•â•â•â•â•šâ•â•     â•šâ•â•â•â•â•â•â• â•šâ•â•â•â•â•â•â•šâ•â•â•šâ•â•        â•šâ•â•   
 """
 
 TAGLINE = "GitHub Spec Kit - Spec-Driven Development Toolkit"
@@ -223,15 +223,15 @@ class StepTracker:
 
             status = step["status"]
             if status == "done":
-                symbol = "[green]●[/green]"
+                symbol = "[green]â—[/green]"
             elif status == "pending":
-                symbol = "[green dim]○[/green dim]"
+                symbol = "[green dim]â—‹[/green dim]"
             elif status == "running":
-                symbol = "[cyan]○[/cyan]"
+                symbol = "[cyan]â—‹[/cyan]"
             elif status == "error":
-                symbol = "[red]●[/red]"
+                symbol = "[red]â—[/red]"
             elif status == "skipped":
-                symbol = "[yellow]○[/yellow]"
+                symbol = "[yellow]â—‹[/yellow]"
             else:
                 symbol = " "
 
@@ -299,12 +299,12 @@ def select_with_arrows(options: dict, prompt_text: str = "Select an option", def
 
         for i, key in enumerate(option_keys):
             if i == selected_index:
-                table.add_row("▶", f"[cyan]{key}[/cyan] [dim]({options[key]})[/dim]")
+                table.add_row("â–¶", f"[cyan]{key}[/cyan] [dim]({options[key]})[/dim]")
             else:
                 table.add_row(" ", f"[cyan]{key}[/cyan] [dim]({options[key]})[/dim]")
 
         table.add_row("", "")
-        table.add_row("", "[dim]Use ↑/↓ to navigate, Enter to select, Esc to cancel[/dim]")
+        table.add_row("", "[dim]Use â†‘/â†“ to navigate, Enter to select, Esc to cancel[/dim]")
 
         return Panel(
             table,
@@ -475,7 +475,7 @@ def init_git_repo(project_path: Path, quiet: bool = False) -> Tuple[bool, Option
         subprocess.run(["git", "add", "."], check=True, capture_output=True, text=True)
         subprocess.run(["git", "commit", "-m", "Initial commit from Specify template"], check=True, capture_output=True, text=True)
         if not quiet:
-            console.print("[green]✓[/green] Git repository initialized")
+            console.print("[green]âœ“[/green] Git repository initialized")
         return True, None
 
     except subprocess.CalledProcessError as e:
@@ -1075,7 +1075,7 @@ def init(
                     ("CWD", str(Path.cwd())),
                 ]
                 _label_width = max(len(k) for k, _ in _env_pairs)
-                env_lines = [f"{k.ljust(_label_width)} → [bright_black]{v}[/bright_black]" for k, v in _env_pairs]
+                env_lines = [f"{k.ljust(_label_width)} â†’ [bright_black]{v}[/bright_black]" for k, v in _env_pairs]
                 console.print(Panel("\n".join(env_lines), title="Debug Environment", border_style="magenta"))
             if not here and project_path.exists():
                 shutil.rmtree(project_path)
@@ -1140,6 +1140,8 @@ def init(
     steps_lines.append(f"{step_num}. Start using slash commands with your AI agent:")
 
     steps_lines.append("   2.1 [cyan]/speckit.constitution[/] - Establish project principles")
+    steps_lines.append("   2.4a [cyan]/speckit.prp[/] - Component-focused planning (optional)")
+    steps_lines.append("   2.5a [cyan]/speckit.implement-prp[/] - Execute component implementation (optional)")
     steps_lines.append("   2.2 [cyan]/speckit.specify[/] - Create baseline specification")
     steps_lines.append("   2.3 [cyan]/speckit.plan[/] - Create implementation plan")
     steps_lines.append("   2.4 [cyan]/speckit.tasks[/] - Generate actionable tasks")
@@ -1152,9 +1154,9 @@ def init(
     enhancement_lines = [
         "Optional commands that you can use for your specs [bright_black](improve quality & confidence)[/bright_black]",
         "",
-        f"○ [cyan]/speckit.clarify[/] [bright_black](optional)[/bright_black] - Ask structured questions to de-risk ambiguous areas before planning (run before [cyan]/speckit.plan[/] if used)",
-        f"○ [cyan]/speckit.analyze[/] [bright_black](optional)[/bright_black] - Cross-artifact consistency & alignment report (after [cyan]/speckit.tasks[/], before [cyan]/speckit.implement[/])",
-        f"○ [cyan]/speckit.checklist[/] [bright_black](optional)[/bright_black] - Generate quality checklists to validate requirements completeness, clarity, and consistency (after [cyan]/speckit.plan[/])"
+        f"â—‹ [cyan]/speckit.clarify[/] [bright_black](optional)[/bright_black] - Ask structured questions to de-risk ambiguous areas before planning (run before [cyan]/speckit.plan[/] if used)",
+        f"â—‹ [cyan]/speckit.analyze[/] [bright_black](optional)[/bright_black] - Cross-artifact consistency & alignment report (after [cyan]/speckit.tasks[/], before [cyan]/speckit.implement[/])",
+        f"â—‹ [cyan]/speckit.checklist[/] [bright_black](optional)[/bright_black] - Generate quality checklists to validate requirements completeness, clarity, and consistency (after [cyan]/speckit.plan[/])"
     ]
     enhancements_panel = Panel("\n".join(enhancement_lines), title="Enhancement Commands", border_style="cyan", padding=(1,2))
     console.print()
