@@ -1,18 +1,10 @@
 ---
-
-description: Execute focused implementation of a specific component defined in a PRP (Project Requirements \& Planning) document
-
-scripts:
-
-&nbsp; sh: scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks --include-prp
-
-&nbsp; ps: scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks -IncludePrp
-
+description: Execute focused implementation of a specific component defined in a PRP (Project Requirements & Planning) document
 ---
 
 
 
-\## User Input
+## User Input
 
 
 
