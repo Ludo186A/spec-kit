@@ -1,125 +1,128 @@
 ---
-description: Sesión de aclaraciones y research previas a la implementación (PRPs TestAgent/VoiceAgent/Orchestrator)
+description: Clarification and research session prior to implementation (PRPs TestAgent/VoiceAgent/Orchestrator)
+scripts:
+  sh: scripts/bash/check-prerequisites.sh --json --include-tasks
+  ps: scripts/powershell/check-prerequisites.ps1 -Json -IncludeTasks
 ---
 
 ## User Input
 
 ```text
 $ARGUMENTS  
-Primera línea (obligatoria): Ruta del PRP objetivo a actualizar (por ejemplo: specs/001-voice-agent-testing/prps/orchestrator-prp.md)
-Líneas siguientes (opcionales): Contexto adicional del usuario. El asistente generará las preguntas de aclaración automáticamente.
+First line (required): Path to the target PRP to update (e.g., specs/001-voice-agent-testing/prps/orchestrator-prp.md)
+Following lines (optional): Additional user context. The assistant will automatically generate clarification questions.
 ```
 
 You **MUST** consider the user input before proceeding (if not empty).
 
 ## Setup
 
-**Setup**: Run `.specify/scripts/powershell/check-prerequisites.ps1 -Json` from repo root **once** and parse minimal JSON payload fields:
+**Setup**: Run `.specify/scripts/powershell/check-prerequisites.ps1 -Json` from the repo root **once**, and parse minimal JSON payload fields:
 - `FEATURE_DIR`
-- `AVAILABLE_DOCS` (list of available documents in feature directory)
-- If JSON parsing fails, abort and instruct user to re-run `/speckit.specify` or verify feature branch environment.
-- For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
+- `AVAILABLE_DOCS` (list of available documents in the feature directory)
+- If JSON parsing fails, abort and instruct the user to re-run `/speckit.specify` or verify the feature branch environment.
+- For single quotes in args like "I'm Groot", use escape syntax: e.g. 'I'\''m Groot (or use double-quotes: "I'm Groot").
 
-## Objetivo
-Detectar y reducir ambigüedades o decisiones faltantes que impacten arquitectura, contratos, pruebas y evaluación. La sesión produce respuestas concretas que se **integran directamente en el PRP indicado en `$ARGUMENTS`** (agregando/actualizando secciones mínimas y testables).
+## Objective
+Detect and reduce ambiguities or missing decisions that impact architecture, contracts, tests, and evaluation. The session produces concrete answers that are **integrated directly into the PRP specified in `$ARGUMENTS`** (adding/updating minimal, testable sections).
 
-## Alcance y Reglas (basado en speckit.clarify)
-- El asistente (yo) **genera proactivamente las dudas/preguntas** necesarias para crear/ajustar el PRP objetivo, a partir del spec actual y research con Anchor MCP. El input del usuario es opcional.
-- Máximo 5 preguntas por sesión, una por vez.
-- Cada pregunta debe resolverse con:
-  - Opción múltiple (2–5 opciones mutuamente exclusivas), o
-  - Respuesta corta (<= 5 palabras).
-- Siempre mostrar una recomendación explícita antes de listar opciones.
-- Registrar cada respuesta aceptada en el **PRP objetivo** bajo `## Clarifications > ### Session YYYY-MM-DD` (si no existe, crearla) y actualizar la sección afectada del PRP de forma mínima y testable.
-- No paralelizar: resolver en orden de mayor impacto (Impacto × Incertidumbre).
+## Scope & Rules (based on speckit.clarify)
+- The assistant (me) **proactively generates questions** needed to create/adjust the target PRP, based on the current spec and research via Anchor MCP. User input is optional.
+- Maximum of 5 questions per session, one at a time.
+- Each question must be resolved with:
+  - Multiple choice (2–5 mutually exclusive options), or
+  - Short answer (<= 5 words).
+- Always show an explicit recommendation before listing options.
+- Record each accepted answer in the **target PRP** under `## Clarifications > ### Session YYYY-MM-DD` (create if missing) and update the affected section of the PRP in a minimal, testable way.
+- Do not parallelize: resolve in order of highest impact (Impact × Uncertainty).
 
-## Modo de Operación
-- Inicio con una pregunta de alto impacto (prioridad T019–T023) siguiendo el formato del workflow.
-- Tras tu respuesta, **integro de inmediato en el PRP objetivo** (archivo provisto en `$ARGUMENTS`) y ajusto secciones del PRP si aplica.
-- Repetimos hasta 5 preguntas o hasta que indiques que es suficiente.
+## Operating Mode
+- Start with a high‑impact question (priority T019–T023) following the workflow format.
+- After your answer, **I immediately integrate it into the target PRP** (file provided in `$ARGUMENTS`) and adjust relevant sections as needed.
+- Repeat up to 5 questions, or until you indicate it's sufficient.
 
-## Taxonomía de Cobertura (guía de escaneo)
-- Alcance funcional y criterios de éxito
-- Dominio y modelo de datos
-- Flujo de interacción y UX (turnos, etapas)
-- Atributos no funcionales (latencia, confiabilidad, observabilidad)
-- Integraciones y dependencias externas (LiveKit, Langfuse, MCP)
-- Edge cases y manejo de fallos (retiros, timeouts, mind change)
-- Restricciones y trade-offs
-- Terminología y consistencia
-- Señales de finalización y DoD
+## Coverage Taxonomy (scan guide)
+- Functional scope and success criteria
+- Domain and data model
+- Interaction flow and UX (turns, stages)
+- Non-functional attributes (latency, reliability, observability)
+- External integrations and dependencies (LiveKit, Langfuse, MCP)
+- Edge cases and failure handling (retries, timeouts, mind change)
+- Constraints and trade-offs
+- Terminology and consistency
+- Exit signals and DoD
 
-## Cola de Preguntas (candidatas)
-Las preguntas se activan de a una. A continuación se listan candidatas iniciales por área de research pendiente (T019–T023).
+## Question Queue (candidates)
+Questions are activated one at a time. Below are initial candidates by pending research area (T019–T023).
 
-### T019 — Langfuse evaluators y scoring
-Pregunta C1: ¿Nivel de evaluación principal?
+### T019 — Langfuse evaluators and scoring
+Question C1: What is the primary evaluation level?
 
-**Recommended:** Opción B — Evaluación por conversación con eventos por turno  
-Razón: Equilibra granularidad con simplicidad; permite KPIs globales y anexar excerpts/flags por turno.
-
-| Option | Description |
-|--------|-------------|
-| A | Solo por turno (cada intercambio produce score independiente) |
-| B | Por conversación + eventos por turno (KPIs globales y anotaciones turno a turno) |
-| C | Mixto con pesos configurables (complejidad mayor al MVP) |
-| Short | Personaliza (<=5 palabras) |
-
-Formato de respuesta: "A", "B", "C" o short.
-
-### T020 — Coordinación multi‑agente LiveKit
-Pregunta C2: ¿Detección de turnos en MVP?
-
-**Recommended:** Opción B — Manual (orchestrator controla)  
-Razón: Reduce incertidumbre inicial; luego podemos pasar a detector semántico/multilingüe.
+**Recommended:** Option B — Conversation-level evaluation with per-turn events  
+Reason: Balances granularity with simplicity; enables global KPIs and attaching per‑turn excerpts/flags.
 
 | Option | Description |
 |--------|-------------|
-| A | VAD/turn detection automática (Multilingual/Semantic) |
-| B | Manual (VoiceAgent saluda; orchestrator avanza etapas) |
-| C | Híbrido (manual con fallback VAD) |
-| Short | Otra (<=5 palabras) |
+| A | Turn-only (each exchange produces an independent score) |
+| B | Conversation-level + per-turn events (global KPIs with turn-by-turn annotations) |
+| C | Mixed with configurable weights (more complexity than MVP) |
+| Short | Customize (<=5 words) |
 
-### T022 — Pytest + secuencial + retry/backoff
-Pregunta C3: ¿Alcance del retry en MVP?
+Response format: "A", "B", "C" or short.
 
-**Recommended:** Opción B — Retries en operaciones I/O críticas (LiveKit room, trace finalize)  
-Razón: Mayor beneficio con menor ruido; evita ocultar bugs lógicos.
+### T020 — LiveKit multi‑agent coordination
+Question C2: Turn detection in MVP?
 
-| Option | Description |
-|--------|-------------|
-| A | Retries amplios (casi todas las operaciones) |
-| B | Solo I/O críticas (crear sala, unirse, finalize trace) |
-| C | Sin retries (fallar rápido) |
-| Short | Personaliza (<=5 palabras) |
-
-### T023 — Evaluación híbrida + LLM‑as‑a‑Judge
-Pregunta C4: ¿Métrica general mínima del MVP?
-
-**Recommended:** Opción B — 3 métricas: task_success (binaria), professionalism (1–5), latency_ms (numérica)  
-Razón: Cubre outcome, calidad y rendimiento; simple de reportar/visualizar.
+**Recommended:** Option B — Manual (orchestrator controls)  
+Reason: Reduces initial uncertainty; we can later move to semantic/multilingual detector.
 
 | Option | Description |
 |--------|-------------|
-| A | Solo task_success (binaria) |
+| A | Automatic VAD/turn detection (Multilingual/Semantic) |
+| B | Manual (VoiceAgent greets; orchestrator advances stages) |
+| C | Hybrid (manual with VAD fallback) |
+| Short | Other (<=5 words) |
+
+### T022 — Pytest + sequential + retry/backoff
+Question C3: Retry scope in MVP?
+
+**Recommended:** Option B — Retries on critical I/O operations (LiveKit room, trace finalize)  
+Reason: Higher benefit with less noise; avoids hiding logical bugs.
+
+| Option | Description |
+|--------|-------------|
+| A | Broad retries (almost all operations) |
+| B | Critical I/O only (create room, join, finalize trace) |
+| C | No retries (fail fast) |
+| Short | Customize (<=5 words) |
+
+### T023 — Hybrid evaluation + LLM‑as‑a‑Judge
+Question C4: Minimum general metric set for MVP?
+
+**Recommended:** Option B — 3 metrics: task_success (binary), professionalism (1–5), latency_ms (numeric)  
+Reason: Covers outcome, quality, and performance; simple to report/visualize.
+
+| Option | Description |
+|--------|-------------|
+| A | task_success only (binary) |
 | B | task_success + professionalism + latency_ms |
-| C | Paquete extendido (7+ métricas) |
-| Short | Otra (<=5 palabras) |
+| C | Extended package (7+ metrics) |
+| Short | Other (<=5 words) |
 
-## Plan de Integración tras cada respuesta
-1. Añadir una línea en el **PRP objetivo** bajo `## Clarifications > ### Session YYYY-MM-DD`:
-   - `- Q: <pregunta> → A: <respuesta>`
-2. Actualizar en el **PRP objetivo** la sección afectada (especificación técnica, criterios de éxito, blueprint, ejemplos) manteniendo el cambio mínimo y testable.
-3. Si corresponde, reflejar notas en otros artefactos (p. ej., `Specs/Readme_langfuse_specs.md` o contratos), pero la fuente de verdad de esta sesión es el **PRP indicado**.
-4. Guardar y marcar T019/T020/T022/T023 como ✅ cuando corresponda.
+## Integration Plan after each answer
+1. Add one line in the **target PRP** under `## Clarifications > ### Session YYYY-MM-DD`:
+   - `- Q: <question> → A: <answer>`
+2. Update the **target PRP** affected section (technical spec, success criteria, blueprint, examples) keeping the change minimal and testable.
+3. If applicable, reflect notes in other artifacts (e.g., `Specs/Readme_langfuse_specs.md` or contracts), but the source of truth for this session is the **specified PRP**.
+4. Save and mark T019/T020/T022/T023 as ✅ when appropriate.
 
-## Anchor MCP — Plan de Queries
+## Anchor MCP — Query Plan
 - Langfuse evaluators: "langfuse evaluator api dataset scoring", "langfuse score config examples"
-- LiveKit coordinación: "AgentSession multi participant turn management", "RoomIO examples"
+- LiveKit coordination: "AgentSession multi participant turn management", "RoomIO examples"
 - Pytest async: "pytest asyncio fixtures sequential", "exponential backoff pattern"
 - LLM‑as‑a‑Judge: "langfuse llm judge rubric", "hybrid evaluation metrics"
 
-## Resultado esperado de la sesión
-- 3–5 respuestas aceptadas que reduzcan incertidumbre de MVP.
-- Actualización de `research.md` y notas en PRPs.
-- Señal clara para iniciar implementación (o si falta una ronda más de clarificación).
+## Expected session outcome
+- 3–5 accepted answers reducing MVP uncertainty.
+- Update `research.md` and notes in PRPs.
+- Clear signal to start implementation (or if another clarification round is needed).
